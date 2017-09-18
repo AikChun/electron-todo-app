@@ -1,5 +1,5 @@
 const electron = require('electron');
-const { app, BrowserWindow, Menu } = electron;
+const { app, BrowserWindow, Menu, ipcMain } = electron;
 
 let mainWindow;
 let addWindow;
@@ -9,20 +9,34 @@ app.on('ready', () => {
 
     mainWindow.loadURL(`file://${__dirname}/main.html`);
 
+    mainWindow.on('closed', () => { app.quit(); });
+
     const mainMenu = Menu.buildFromTemplate(menuTemplate);
     Menu.setApplicationMenu(mainMenu);
+
+
 });
 
 function createAddWindow() {
-    addWindow = new BrowserWindow({
-        width: 300,
-        height: 200,
-        title: 'Add New Todo'
-    });
-
-    addWindow.loadURL(`file://${__dirname}/add.html`);
+    if (!addWindow) {
+        addWindow = new BrowserWindow({
+            width: 300,
+            height: 200,
+            title: 'Add New Todo'
+        });
     
+        addWindow.loadURL(`file://${__dirname}/add.html`);
+
+        addWindow.on('closed', () => { addWindow = null; });
+    }
+
+    addWindow.focus();
 }
+
+ipcMain.on('todo:add', (event, todo) => {
+    mainWindow.webContents.send('todo:add', todo);
+    addWindow.close();
+});
 
 const menuTemplate = [
     {
@@ -47,4 +61,24 @@ const menuTemplate = [
 
 if (process.platform === 'darwin') {
     menuTemplate.unshift({});
+}
+
+if (process.env.NODE_ENV !== 'production') {
+    // 'production'
+    // 'development'
+    // 'staging'
+    // 'test'
+    menuTemplate.push({
+        label: 'View',
+        submenu: [
+            {
+                role: 'reload'
+            },
+            {
+            label: 'Developer Tools',
+            accelerator: 'Ctrl+Shift+I',
+            click(item, focusedWindow) { focusedWindow.toggleDevTools(); }
+            }
+        ]
+    });
 }
