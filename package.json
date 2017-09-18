@@ -1,0 +1,22 @@
+{
+  "name": "electron-todo-app",
+  "version": "1.0.0",
+  "description": "Sample todo app done in electron",
+  "main": "index.js",
+  "scripts": {
+    "electron": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AikChun/electron-todo-app.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AikChun/electron-todo-app/issues"
+  },
+  "homepage": "https://github.com/AikChun/electron-todo-app#readme",
+  "dependencies": {
+    "electron": "^1.7.6"
+  }
+}
